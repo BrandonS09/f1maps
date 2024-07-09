@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { StyleSheet, View, Text, Image, useWindowDimensions } from "react-native";
+import { StyleSheet, View, Text, Image } from "react-native";
 import MapView, { PROVIDER_GOOGLE, Marker } from "react-native-maps";
 import * as Location from "expo-location";
 import uIcon from "../f1maps/assets/lando.png";
-
 
 export default function App() {
   const [location, setLocation] = useState<Location.LocationObject | null>(null);
@@ -80,5 +79,5 @@ const styles = StyleSheet.create({
   map: {
     flex: 1,
     width: "100%",
-  },
-});
+  }
+}
