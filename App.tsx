@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { StyleSheet, View, Text, Image, TextInput, Button, Platform } from "react-native";
 import MapView, { PROVIDER_GOOGLE, Marker, Polyline } from "react-native-maps";
 import * as Location from "expo-location";
@@ -20,6 +20,7 @@ export default function App() {
   const [destinationCoords, setDestinationCoords] = useState<Location.LocationObject | null>(null);
   const [userMarker, setUserMarker] = useState<Location.LocationObject | null>(null);
   const [routeCoordinates, setRouteCoordinates] = useState([]);
+  const mapRef = useRef<MapView>(null);
 
   useEffect(() => {
     (async () => {
@@ -64,6 +65,15 @@ export default function App() {
       const geocode = await Location.geocodeAsync(destination);
       if (geocode && geocode.length > 0) {
         setDestinationCoords(geocode[0]);
+        if (mapRef.current) {
+          mapRef.current.fitToCoordinates([
+            { latitude: location.coords.latitude, longitude: location.coords.longitude },
+            { latitude: geocode[0].latitude, longitude: geocode[0].longitude }
+          ], {
+            edgePadding: { top: 50, right: 50, bottom: 50, left: 50 },
+            animated: true,
+          });
+        }
       } else {
         alert("Destination not found");
       }
@@ -144,6 +154,7 @@ export default function App() {
       <View style={styles.mapContainer}>
         {location ? (
           <MapView
+            ref={mapRef}
             provider={PROVIDER_GOOGLE}
             style={styles.map}
             initialRegion={{
