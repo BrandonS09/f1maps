@@ -5,7 +5,26 @@ import * as Location from "expo-location";
 import axios from "axios";
 import Constants from 'expo-constants';
 
-import uIcon from "./assets/lando.png";
+import lando from "./assets/lando.png";
+import yuki from "./assets/yuki.png"
+import vallteri from "./assets/vallteri.png"
+import nepobaby from "./assets/stroll.png"
+import sainz from "./assets/sainz.png"
+import russell from "./assets/russell.png"
+import riccardo from "./assets/riccardo.png"
+import pierre from "./assets/pierre.png"
+import oscar from "./assets/oscar.png"
+import ocon from "./assets/ocon.png"
+import nico from "./assets/nico.png"
+import max from "./assets/max.png"
+import logan from "./assets/logan.png"
+import leclerec from "./assets/leclerec.png"
+import kevin from "./assets/kevin.png"
+import ham from "./assets/ham.png"
+import checo from "./assets/checo.png"
+import alonso from "./assets/alonso.png"
+import alex from "./assets/alex.png"
+
 import f1Flag from "./assets/flag.png";
 
 // Access API Key from Constants.expoConfig
@@ -22,6 +41,7 @@ export default function App() {
   const [userMarker, setUserMarker] = useState<Location.LocationObject | null>(null);
   const [routeCoordinates, setRouteCoordinates] = useState([]);
   const mapRef = useRef<MapView>(null);
+  const uIcon = lando
 
   useEffect(() => {
     (async () => {
