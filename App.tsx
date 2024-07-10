@@ -3,7 +3,7 @@ import { StyleSheet, View, Text, Image, TextInput, Button } from "react-native";
 import MapView, { PROVIDER_GOOGLE, Marker } from "react-native-maps";
 import * as Location from "expo-location";
 import { Directions } from "react-native-google-maps-directions";
-          
+
 import uIcon from "../f1maps/assets/lando.png";
 
 export default function App() {
@@ -11,6 +11,7 @@ export default function App() {
   const [heading, setHeading] = useState<number | null>(null);
   const [destination, setDestination] = useState<string>("");
   const [destinationCoords, setDestinationCoords] = useState<Location.LocationObject | null>(null);
+  const [userMarker, setUserMarker] = useState<Location.LocationObject | null>(null);
 
   useEffect(() => {
     (async () => {
@@ -23,6 +24,18 @@ export default function App() {
       try {
         let location = await Location.getCurrentPositionAsync({});
         setLocation(location);
+
+        Location.watchPositionAsync(
+          {
+            accuracy: Location.Accuracy.BestForNavigation,
+            timeInterval: 1000, // Update location every second
+            distanceInterval: 1, // Minimum distance (in meters) to trigger an update
+          },
+          (locationData) => {
+            setLocation(locationData);
+            setUserMarker(locationData);
+          }
+        );
 
         Location.watchHeadingAsync((headingData) => {
           setHeading(headingData.trueHeading);
@@ -60,8 +73,8 @@ export default function App() {
 
     const data = {
       source: {
-        latitude: location?.coords.latitude || 0,
-        longitude: location?.coords.longitude || 0,
+        latitude: userMarker?.coords.latitude || 0,
+        longitude: userMarker?.coords.longitude || 0,
       },
       destination: {
         latitude: destinationCoords.latitude,
@@ -115,17 +128,19 @@ export default function App() {
               />
             )}
 
-            <Marker
-              coordinate={{
-                latitude: location.coords.latitude,
-                longitude: location.coords.longitude,
-              }}
-              title="My Location"
-              description="Current Location"
-              rotation={heading || 0}
-            >
-              <Image source={uIcon} style={{ width: 50, height: 50 }} resizeMode="contain" />
-            </Marker>
+            {userMarker && (
+              <Marker
+                coordinate={{
+                  latitude: userMarker.coords.latitude,
+                  longitude: userMarker.coords.longitude,
+                }}
+                title="My Location"
+                description="Current Location"
+                rotation={heading || 0}
+              >
+                <Image source={uIcon} style={{ width: 50, height: 50 }} resizeMode="contain" />
+              </Marker>
+            )}
           </MapView>
         ) : (
           <Text>Loading...</Text>
@@ -165,3 +180,4 @@ const styles = StyleSheet.create({
     width: "100%",
   },
 });
+     
