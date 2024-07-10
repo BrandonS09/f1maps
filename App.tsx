@@ -41,7 +41,7 @@ export default function App() {
   const [userMarker, setUserMarker] = useState<Location.LocationObject | null>(null);
   const [routeCoordinates, setRouteCoordinates] = useState([]);
   const mapRef = useRef<MapView>(null);
-  const uIcon = lando
+  const [uIcon, setUIcon] = useState(lando)
 
   useEffect(() => {
     (async () => {
