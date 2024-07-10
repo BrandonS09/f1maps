@@ -73,8 +73,8 @@ export default function App() {
 
     const data = {
       source: {
-        latitude: userMarker?.coords.latitude || 0,
-        longitude: userMarker?.coords.longitude || 0,
+        latitude: location.coords.latitude,
+        longitude: location.coords.longitude,
       },
       destination: {
         latitude: destinationCoords.latitude,
@@ -92,7 +92,7 @@ export default function App() {
       ],
     };
 
-    Directions(data); // Ensure correct usage of Directions function
+    Directions(data);
   };
 
   return (
@@ -180,4 +180,3 @@ const styles = StyleSheet.create({
     width: "100%",
   },
 });
-     
