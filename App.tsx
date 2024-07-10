@@ -70,7 +70,7 @@ export default function App() {
       alert("Please search for a destination first");
       return;
     }
-
+  
     const data = {
       source: {
         latitude: location.coords.latitude,
@@ -91,8 +91,8 @@ export default function App() {
         },
       ],
     };
-
-    Directions(data);
+  
+    Directions(data); // Ensure correct usage of Directions function
   };
 
   return (
