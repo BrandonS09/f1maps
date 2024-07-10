@@ -1,10 +1,17 @@
 import React, { useEffect, useState } from "react";
-import { StyleSheet, View, Text, Image, TextInput, Button } from "react-native";
-import MapView, { PROVIDER_GOOGLE, Marker } from "react-native-maps";
+import { StyleSheet, View, Text, Image, TextInput, Button, Platform } from "react-native";
+import MapView, { PROVIDER_GOOGLE, Marker, Polyline } from "react-native-maps";
 import * as Location from "expo-location";
-import { Directions } from "react-native-google-maps-directions";
+import axios from "axios";
+import Constants from 'expo-constants';
 
-import uIcon from "../f1maps/assets/lando.png";
+import uIcon from "./assets/lando.png";
+
+// Access API Key from Constants.manifest
+const apiKey = Platform.select({
+  ios: Constants.manifest?.ios?.config?.googleMaps?.apiKey,
+  android: Constants.manifest?.android?.config?.googleMaps?.apiKey
+});
 
 export default function App() {
   const [location, setLocation] = useState<Location.LocationObject | null>(null);
@@ -12,6 +19,7 @@ export default function App() {
   const [destination, setDestination] = useState<string>("");
   const [destinationCoords, setDestinationCoords] = useState<Location.LocationObject | null>(null);
   const [userMarker, setUserMarker] = useState<Location.LocationObject | null>(null);
+  const [routeCoordinates, setRouteCoordinates] = useState([]);
 
   useEffect(() => {
     (async () => {
@@ -65,34 +73,56 @@ export default function App() {
     }
   };
 
-  const handleDirections = () => {
+  const handleDirections = async () => {
     if (!destinationCoords) {
       alert("Please search for a destination first");
       return;
     }
-  
-    const data = {
-      source: {
-        latitude: location.coords.latitude,
-        longitude: location.coords.longitude,
-      },
-      destination: {
-        latitude: destinationCoords.latitude,
-        longitude: destinationCoords.longitude,
-      },
-      params: [
-        {
-          key: "travelmode",
-          value: "driving", // May change according to your use case
-        },
-        {
-          key: "dir_action",
-          value: "navigate",
-        },
-      ],
-    };
-  
-    Directions(data); // Ensure correct usage of Directions function
+
+    const origin = `${location.coords.latitude},${location.coords.longitude}`;
+    const destination = `${destinationCoords.latitude},${destinationCoords.longitude}`;
+    const url = `https://maps.googleapis.com/maps/api/directions/json?origin=${origin}&destination=${destination}&key=${apiKey}`;
+
+    try {
+      const response = await axios.get(url);
+      console.log("API Response:", response.data); // Log the entire response
+      if (response.data.routes && response.data.routes.length > 0) {
+        const points = decode(response.data.routes[0].overview_polyline.points);
+        setRouteCoordinates(points);
+      } else {
+        console.error("No routes found in the API response.");
+        alert("No routes found. Please check the destination or try again later.");
+      }
+    } catch (error) {
+      console.error("Error fetching directions:", error);
+    }
+  };
+
+  // Function to decode polyline points
+  const decode = (t, e = 5) => {
+    let points = [];
+    for (let step = 0, lat = 0, lon = 0; step < t.length; ) {
+      let b, shift = 0, result = 0;
+      do {
+        b = t.charCodeAt(step++) - 63;
+        result |= (b & 0x1f) << shift;
+        shift += 5;
+      } while (b >= 0x20);
+      let dlat = result & 1 ? ~(result >> 1) : result >> 1;
+      lat += dlat;
+
+      shift = result = 0;
+      do {
+        b = t.charCodeAt(step++) - 63;
+        result |= (b & 0x1f) << shift;
+        shift += 5;
+      } while (b >= 0x20);
+      let dlng = result & 1 ? ~(result >> 1) : result >> 1;
+      lon += dlng;
+
+      points.push({ latitude: lat / 1e5, longitude: lon / 1e5 });
+    }
+    return points;
   };
 
   return (
@@ -140,6 +170,14 @@ export default function App() {
               >
                 <Image source={uIcon} style={{ width: 50, height: 50 }} resizeMode="contain" />
               </Marker>
+            )}
+
+            {routeCoordinates.length > 0 && (
+              <Polyline
+                coordinates={routeCoordinates}
+                strokeWidth={4}
+                strokeColor="blue"
+              />
             )}
           </MapView>
         ) : (
