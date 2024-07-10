@@ -43,11 +43,16 @@ const apiKey = Platform.select({
 });
 
 export default function App() {
-  const [location, setLocation] = useState<Location.LocationObject | null>(null);
+  const [location, setLocation] = useState<Location.LocationObject | null>(
+    null
+  );
   const [heading, setHeading] = useState<number | null>(null);
   const [destination, setDestination] = useState<string>("");
-  const [destinationCoords, setDestinationCoords] = useState<Location.LocationObject | null>(null);
-  const [userMarker, setUserMarker] = useState<Location.LocationObject | null>(null);
+  const [destinationCoords, setDestinationCoords] =
+    useState<Location.LocationObject | null>(null);
+  const [userMarker, setUserMarker] = useState<Location.LocationObject | null>(
+    null
+  );
   const [routeCoordinates, setRouteCoordinates] = useState([]);
   const mapRef = useRef<MapView>(null);
   const [uIcon, setUIcon] = useState(nepobaby);
@@ -185,31 +190,31 @@ export default function App() {
     }
     return points;
   };
-  
+
   const chooseDriver = () => {
     setChooseDriverClicked(true);
   };
 
   const drivers = [
-    { name: 'Lando', image: lando },
-    { name: 'Yuki', image: yuki },
-    { name: 'Valtteri', image: valtteri },
-    { name: 'Stroll', image: nepobaby },
-    { name: 'Sainz', image: sainz },
-    { name: 'Russell', image: russell },
-    { name: 'Ricciardo', image: ricciardo },
-    { name: 'Pierre', image: pierre },
-    { name: 'Oscar', image: oscar },
-    { name: 'Ocon', image: ocon },
-    { name: 'Nico', image: nico },
-    { name: 'Max', image: max },
-    { name: 'Logan', image: logan },
-    { name: 'Leclerc', image: leclerc },
-    { name: 'Kevin', image: kevin },
-    { name: 'Ham', image: ham },
-    { name: 'Checo', image: checo },
-    { name: 'Alonso', image: alonso },
-    { name: 'Alex', image: alex },
+    { name: "Lando", image: lando },
+    { name: "Yuki", image: yuki },
+    { name: "Valtteri", image: valtteri },
+    { name: "Stroll", image: nepobaby },
+    { name: "Sainz", image: sainz },
+    { name: "Russell", image: russell },
+    { name: "Ricciardo", image: ricciardo },
+    { name: "Pierre", image: pierre },
+    { name: "Oscar", image: oscar },
+    { name: "Ocon", image: ocon },
+    { name: "Nico", image: nico },
+    { name: "Max", image: max },
+    { name: "Logan", image: logan },
+    { name: "Leclerc", image: leclerc },
+    { name: "Kevin", image: kevin },
+    { name: "Ham", image: ham },
+    { name: "Checo", image: checo },
+    { name: "Alonso", image: alonso },
+    { name: "Alex", image: alex },
   ];
 
   const handleDriverSelect = (driver) => {
@@ -298,7 +303,10 @@ export default function App() {
       {chooseDriverClicked && (
         <View style={styles.driverContainer}>
           {drivers.map((driver) => (
-            <TouchableOpacity key={driver.name} onPress={() => handleDriverSelect(driver)}>
+            <TouchableOpacity
+              key={driver.name}
+              onPress={() => handleDriverSelect(driver)}
+            >
               <Image source={driver.image} style={styles.driverImage} />
               <Text>{driver.name}</Text>
             </TouchableOpacity>
@@ -337,15 +345,15 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   buttonContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    width: '100%',
+    flexDirection: "row",
+    justifyContent: "space-around",
+    width: "100%",
     marginVertical: 10,
   },
   driverContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'center',
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "center",
   },
   driverImage: {
     width: 50,
