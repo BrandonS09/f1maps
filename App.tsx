@@ -7,10 +7,10 @@ import Constants from 'expo-constants';
 
 import uIcon from "./assets/lando.png";
 
-// Access API Key from Constants.manifest
+// Access API Key from Constants.expoConfig
 const apiKey = Platform.select({
-  ios: Constants.manifest?.ios?.config?.googleMaps?.apiKey,
-  android: Constants.manifest?.android?.config?.googleMaps?.apiKey
+  ios: Constants.expoConfig.extra.googleMaps.iosApiKey,
+  android: Constants.expoConfig.extra.googleMaps.androidApiKey,
 });
 
 export default function App() {
