@@ -81,13 +81,18 @@ export default function App() {
 
     const origin = `${location.coords.latitude},${location.coords.longitude}`;
     const destination = `${destinationCoords.latitude},${destinationCoords.longitude}`;
-    const url = `https://maps.googleapis.com/maps/api/directions/json?origin=${origin}&destination=${destination}&key=${apiKey}&optimize=true`;
+    const url = `https://maps.googleapis.com/maps/api/directions/json?origin=${origin}&destination=${destination}&key=${apiKey}&mode=driving`;
 
     try {
       const response = await axios.get(url);
       console.log("API Response:", response.data); // Log the entire response
       if (response.data.routes && response.data.routes.length > 0) {
-        const points = decode(response.data.routes[0].overview_polyline.points);
+        const steps = response.data.routes[0].legs[0].steps;
+        const points = [];
+        steps.forEach(step => {
+          const stepPoints = decode(step.polyline.points);
+          points.push(...stepPoints);
+        });
         setRouteCoordinates(points);
       } else {
         console.error("No routes found in the API response.");
@@ -101,7 +106,8 @@ export default function App() {
   // Function to decode polyline points
   const decode = (t, e = 5) => {
     let points = [];
-    for (let step = 0, lat = 0, lon = 0; step < t.length; ) {
+    let lat = 0, lon = 0;
+    for (let step = 0; step < t.length; ) {
       let b, shift = 0, result = 0;
       do {
         b = t.charCodeAt(step++) - 63;
