@@ -1,29 +1,38 @@
 import React, { useEffect, useState, useRef } from "react";
-import { StyleSheet, View, Text, Image, TextInput, Button, Platform } from "react-native";
+import {
+  StyleSheet,
+  View,
+  Text,
+  Image,
+  TextInput,
+  Button,
+  TouchableOpacity,
+  Platform,
+} from "react-native";
 import MapView, { PROVIDER_GOOGLE, Marker, Polyline } from "react-native-maps";
 import * as Location from "expo-location";
 import axios from "axios";
-import Constants from 'expo-constants';
+import Constants from "expo-constants";
 
 import lando from "./assets/lando.png";
-import yuki from "./assets/yuki.png"
-import vallteri from "./assets/vallteri.png"
-import nepobaby from "./assets/stroll.png"
-import sainz from "./assets/sainz.png"
-import russell from "./assets/russell.png"
-import riccardo from "./assets/riccardo.png"
-import pierre from "./assets/pierre.png"
-import oscar from "./assets/oscar.png"
-import ocon from "./assets/ocon.png"
-import nico from "./assets/nico.png"
-import max from "./assets/max.png"
-import logan from "./assets/logan.png"
-import leclerec from "./assets/leclerec.png"
-import kevin from "./assets/kevin.png"
-import ham from "./assets/ham.png"
-import checo from "./assets/checo.png"
-import alonso from "./assets/alonso.png"
-import alex from "./assets/alex.png"
+import yuki from "./assets/yuki.png";
+import valtteri from "./assets/vallteri.png";
+import nepobaby from "./assets/stroll.png";
+import sainz from "./assets/sainz.png";
+import russell from "./assets/russell.png";
+import ricciardo from "./assets/riccardo.png";
+import pierre from "./assets/pierre.png";
+import oscar from "./assets/oscar.png";
+import ocon from "./assets/ocon.png";
+import nico from "./assets/nico.png";
+import max from "./assets/max.png";
+import logan from "./assets/logan.png";
+import leclerc from "./assets/leclerec.png";
+import kevin from "./assets/kevin.png";
+import ham from "./assets/ham.png";
+import checo from "./assets/checo.png";
+import alonso from "./assets/alonso.png";
+import alex from "./assets/alex.png";
 
 import f1Flag from "./assets/flag.png";
 
@@ -41,7 +50,8 @@ export default function App() {
   const [userMarker, setUserMarker] = useState<Location.LocationObject | null>(null);
   const [routeCoordinates, setRouteCoordinates] = useState([]);
   const mapRef = useRef<MapView>(null);
-  const [uIcon, setUIcon] = useState(lando)
+  const [uIcon, setUIcon] = useState(nepobaby);
+  const [chooseDriverClicked, setChooseDriverClicked] = useState(false);
 
   useEffect(() => {
     (async () => {
@@ -87,13 +97,22 @@ export default function App() {
       if (geocode && geocode.length > 0) {
         setDestinationCoords(geocode[0]);
         if (mapRef.current) {
-          mapRef.current.fitToCoordinates([
-            { latitude: location.coords.latitude, longitude: location.coords.longitude },
-            { latitude: geocode[0].latitude, longitude: geocode[0].longitude }
-          ], {
-            edgePadding: { top: 50, right: 50, bottom: 50, left: 50 },
-            animated: true,
-          });
+          mapRef.current.fitToCoordinates(
+            [
+              {
+                latitude: location.coords.latitude,
+                longitude: location.coords.longitude,
+              },
+              {
+                latitude: geocode[0].latitude,
+                longitude: geocode[0].longitude,
+              },
+            ],
+            {
+              edgePadding: { top: 50, right: 50, bottom: 50, left: 50 },
+              animated: true,
+            }
+          );
         }
       } else {
         alert("Destination not found");
@@ -120,14 +139,16 @@ export default function App() {
       if (response.data.routes && response.data.routes.length > 0) {
         const steps = response.data.routes[0].legs[0].steps;
         const points = [];
-        steps.forEach(step => {
+        steps.forEach((step) => {
           const stepPoints = decode(step.polyline.points);
           points.push(...stepPoints);
         });
         setRouteCoordinates(points);
       } else {
         console.error("No routes found in the API response.");
-        alert("No routes found. Please check the destination or try again later.");
+        alert(
+          "No routes found. Please check the destination or try again later."
+        );
       }
     } catch (error) {
       console.error("Error fetching directions:", error);
@@ -137,9 +158,12 @@ export default function App() {
   // Function to decode polyline points
   const decode = (t, e = 5) => {
     let points = [];
-    let lat = 0, lon = 0;
+    let lat = 0,
+      lon = 0;
     for (let step = 0; step < t.length; ) {
-      let b, shift = 0, result = 0;
+      let b,
+        shift = 0,
+        result = 0;
       do {
         b = t.charCodeAt(step++) - 63;
         result |= (b & 0x1f) << shift;
@@ -160,6 +184,37 @@ export default function App() {
       points.push({ latitude: lat / 1e5, longitude: lon / 1e5 });
     }
     return points;
+  };
+  
+  const chooseDriver = () => {
+    setChooseDriverClicked(true);
+  };
+
+  const drivers = [
+    { name: 'Lando', image: lando },
+    { name: 'Yuki', image: yuki },
+    { name: 'Valtteri', image: valtteri },
+    { name: 'Stroll', image: nepobaby },
+    { name: 'Sainz', image: sainz },
+    { name: 'Russell', image: russell },
+    { name: 'Ricciardo', image: ricciardo },
+    { name: 'Pierre', image: pierre },
+    { name: 'Oscar', image: oscar },
+    { name: 'Ocon', image: ocon },
+    { name: 'Nico', image: nico },
+    { name: 'Max', image: max },
+    { name: 'Logan', image: logan },
+    { name: 'Leclerc', image: leclerc },
+    { name: 'Kevin', image: kevin },
+    { name: 'Ham', image: ham },
+    { name: 'Checo', image: checo },
+    { name: 'Alonso', image: alonso },
+    { name: 'Alex', image: alex },
+  ];
+
+  const handleDriverSelect = (driver) => {
+    setUIcon(driver.image);
+    setChooseDriverClicked(false);
   };
 
   return (
@@ -194,7 +249,11 @@ export default function App() {
                 title="Destination"
                 description={destination}
               >
-                <Image source={f1Flag} style={{ width: 50, height: 50 }} resizeMode="contain" />
+                <Image
+                  source={f1Flag}
+                  style={{ width: 50, height: 50 }}
+                  resizeMode="contain"
+                />
               </Marker>
             )}
 
@@ -208,7 +267,11 @@ export default function App() {
                 description="Current Location"
                 rotation={heading || 0}
               >
-                <Image source={uIcon} style={{ width: 50, height: 50 }} resizeMode="contain" />
+                <Image
+                  source={uIcon}
+                  style={{ width: 50, height: 50 }}
+                  resizeMode="contain"
+                />
               </Marker>
             )}
 
@@ -224,8 +287,24 @@ export default function App() {
           <Text>Loading...</Text>
         )}
       </View>
-
-      <Button title="Get Directions" onPress={handleDirections} disabled={!destinationCoords} />
+      <View style={styles.buttonContainer}>
+        <Button
+          title="Get Directions"
+          onPress={handleDirections}
+          disabled={!destinationCoords}
+        />
+        <Button title="Choose Driver" onPress={chooseDriver} />
+      </View>
+      {chooseDriverClicked && (
+        <View style={styles.driverContainer}>
+          {drivers.map((driver) => (
+            <TouchableOpacity key={driver.name} onPress={() => handleDriverSelect(driver)}>
+              <Image source={driver.image} style={styles.driverImage} />
+              <Text>{driver.name}</Text>
+            </TouchableOpacity>
+          ))}
+        </View>
+      )}
     </View>
   );
 }
@@ -256,5 +335,21 @@ const styles = StyleSheet.create({
   map: {
     flex: 1,
     width: "100%",
+  },
+  buttonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    width: '100%',
+    marginVertical: 10,
+  },
+  driverContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'center',
+  },
+  driverImage: {
+    width: 50,
+    height: 50,
+    margin: 10,
   },
 });
