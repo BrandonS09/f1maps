@@ -6,6 +6,7 @@ import axios from "axios";
 import Constants from 'expo-constants';
 
 import uIcon from "./assets/lando.png";
+import f1Flag from "./assets/flag.png";
 
 // Access API Key from Constants.expoConfig
 const apiKey = Platform.select({
@@ -172,7 +173,9 @@ export default function App() {
                 }}
                 title="Destination"
                 description={destination}
-              />
+              >
+                <Image source={f1Flag} style={{ width: 50, height: 50 }} resizeMode="contain" />
+              </Marker>
             )}
 
             {userMarker && (
