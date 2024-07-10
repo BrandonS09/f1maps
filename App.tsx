@@ -222,6 +222,10 @@ export default function App() {
     setChooseDriverClicked(false);
   };
 
+  const closeDriverMenu = () => {
+    setChooseDriverClicked(false);
+  }
+
   return (
     <View style={styles.container}>
       <TextInput
@@ -311,6 +315,7 @@ export default function App() {
               <Text>{driver.name}</Text>
             </TouchableOpacity>
           ))}
+          <Button title="Close" onPress={closeDriverMenu} />
         </View>
       )}
     </View>
