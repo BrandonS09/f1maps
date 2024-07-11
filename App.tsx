@@ -13,6 +13,7 @@ import MapView, { PROVIDER_GOOGLE, Marker, Polyline } from "react-native-maps";
 import * as Location from "expo-location";
 import axios from "axios";
 import Constants from "expo-constants";
+import Modal from "react-native-modal";
 
 import lando from "./assets/lando.png";
 import yuki from "./assets/yuki.png";
@@ -58,6 +59,7 @@ export default function App() {
   const [uIcon, setUIcon] = useState(nepobaby);
   const [chooseDriverClicked, setChooseDriverClicked] = useState(false);
   const [travelForm, setTravelForm] = useState('driving');
+  const [isTravelSelection, setIsTravelSelection] = React.useState(false);
 
   useEffect(() => {
     (async () => {
@@ -131,18 +133,23 @@ export default function App() {
   
   const setDriving = () => {
     setTravelForm("driving");
+    handleDirections();
   }
 
   const setWalking = () => {
-    setTravelForm("walking")
+    setTravelForm("walking");
+    handleDirections();
+  }
+  const showSelectionModal = () => {
+    setIsTravelSelection(true);
   }
 
   const handleDirections = async () => {
+    setIsTravelSelection(false);
     if (!destinationCoords) {
       alert("Please search for a destination first");
       return;
     }
-
 
     const origin = `${location.coords.latitude},${location.coords.longitude}`;
     const destination = `${destinationCoords.latitude},${destinationCoords.longitude}`;
@@ -309,11 +316,18 @@ export default function App() {
       <View style={styles.buttonContainer}>
         <Button
           title="Get Directions"
-          onPress={handleDirections}
+          onPress={showSelectionModal}
           disabled={!destinationCoords}
         />
         <Button title="Choose Driver" onPress={chooseDriver} />
       </View>
+      <Modal isVisible={isTravelSelection}>
+        <View style={{ flex: 1 }}>
+          <Text>Select Your Way of Travel</Text>
+          <Button title="Driving" onPress={setDriving} />
+          <Button title="Walking" onPress={setWalking} />
+        </View>
+      </Modal>
       {chooseDriverClicked && (
         <View style={styles.driverContainer}>
           {drivers.map((driver) => (
