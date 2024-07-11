@@ -10,6 +10,7 @@ import Modal from "react-native-modal";
 import nepobaby from "./assets/stroll.png";
 import drivers from "./src/drivers";
 import { decodePolyline } from "./src/utils";
+import MapView from "react-native-maps";
 
 const apiKey = Platform.select({
   ios: Constants.expoConfig.extra.googleMaps.iosApiKey,
