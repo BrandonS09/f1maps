@@ -354,7 +354,7 @@ export default function App() {
                   source={uIcon}
                   style={{
                     width: travelForm === "driving" ? 70 : 50,
-                    height: travelForm === "driving" ? 70 : 50,
+                    height: travelForm === "driving" ? 50 : 50,
                   }}
                   resizeMode="contain"
                 />
