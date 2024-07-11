@@ -38,12 +38,12 @@ import rb from "./assets/rb.png";
 import redbull from "./assets/redbull.png";
 import mclaren from "./assets/mclaren.png";
 import am from "./assets/am.png";
-import mercedes from "./assets/mercedes.png"
+import mercedes from "./assets/mercedes.png";
 import haas from "./assets/haas.png";
-import alpine from "./assets/alpine.png"
-import ferrari from "./assets/ferrari.png"
-import williams from "./assets/willaims.png"
-import sauber from "./assets/sauber.png"
+import alpine from "./assets/alpine.png";
+import ferrari from "./assets/ferrari.png";
+import williams from "./assets/williams.png";
+import sauber from "./assets/sauber.png";
 
 import f1Flag from "./assets/flag.png";
 
@@ -68,10 +68,33 @@ export default function App() {
   const [eta, setEta] = useState<string | null>(null);
   const [distance, setDistance] = useState<string | null>(null);
   const mapRef = useRef<MapView>(null);
-  const [uIcon, setUIcon] = useState(nepobaby);
+  const [uIcon, setUIcon] = useState(nepobaby); // Default to driver's face
   const [chooseDriverClicked, setChooseDriverClicked] = useState(false);
-  const [travelForm, setTravelForm] = useState("driving");
+  const [travelForm, setTravelForm] = useState("walking"); // Default to walking
   const [isTravelSelection, setIsTravelSelection] = React.useState(false);
+  const [selectedDriver, setSelectedDriver] = useState(null);
+
+  const driverTeams = {
+    Lando: mclaren,
+    Yuki: rb,
+    Valtteri: sauber,
+    Stroll: am,
+    Sainz: ferrari,
+    Russell: mercedes,
+    Ricciardo: rb,
+    Pierre: alpine,
+    Oscar: mclaren,
+    Ocon: alpine,
+    Nico: haas,
+    Max: rb,
+    Logan: williams,
+    Leclerc: ferrari,
+    Kevin: haas,
+    Ham: mercedes,
+    Checo: rb,
+    Alonso: am,
+    Alex: williams,
+  };
 
   useEffect(() => {
     (async () => {
@@ -114,6 +137,16 @@ export default function App() {
       return () => clearInterval(interval);
     }
   }, [destinationCoords, location, travelForm]);
+
+  useEffect(() => {
+    if (selectedDriver) {
+      if (travelForm === "driving") {
+        setUIcon(driverTeams[selectedDriver.name]);
+      } else {
+        setUIcon(selectedDriver.image);
+      }
+    }
+  }, [travelForm, selectedDriver]);
 
   const handleSearch = async () => {
     if (destination.trim() === "") {
@@ -258,7 +291,8 @@ export default function App() {
   ];
 
   const handleDriverSelect = (driver) => {
-    setUIcon(driver.image);
+    setSelectedDriver(driver);
+    setUIcon(driver.image); // Default to driver's face
     setChooseDriverClicked(false);
   };
 
@@ -318,7 +352,10 @@ export default function App() {
               >
                 <Image
                   source={uIcon}
-                  style={{ width: 50, height: 50 }}
+                  style={{
+                    width: travelForm === "driving" ? 70 : 50,
+                    height: travelForm === "driving" ? 70 : 50,
+                  }}
                   resizeMode="contain"
                 />
               </Marker>
