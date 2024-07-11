@@ -1,5 +1,13 @@
 import React, { useEffect, useState, useRef } from "react";
-import { StyleSheet, View, Text, TextInput, Button, ActivityIndicator, Platform } from "react-native";
+import {
+  StyleSheet,
+  View,
+  Text,
+  TextInput,
+  Button,
+  ActivityIndicator,
+  Platform,
+} from "react-native";
 import Map from "./src/Map";
 import DriverSelection from "./src/DriverSelection";
 import TravelSelection from "./src/TravelSelection";
@@ -17,11 +25,16 @@ const apiKey = Platform.select({
 });
 
 const App: React.FC = () => {
-  const [location, setLocation] = useState<Location.LocationObject | null>(null);
+  const [location, setLocation] = useState<Location.LocationObject | null>(
+    null
+  );
   const [heading, setHeading] = useState<number | null>(null);
   const [destination, setDestination] = useState<string>("");
-  const [destinationCoords, setDestinationCoords] = useState<Location.LocationObject | null>(null);
-  const [userMarker, setUserMarker] = useState<Location.LocationObject | null>(null);
+  const [destinationCoords, setDestinationCoords] =
+    useState<Location.LocationObject | null>(null);
+  const [userMarker, setUserMarker] = useState<Location.LocationObject | null>(
+    null
+  );
   const [routeCoordinates, setRouteCoordinates] = useState([]);
   const [eta, setEta] = useState<string | null>(null);
   const [distance, setDistance] = useState<string | null>(null);
@@ -157,7 +170,7 @@ const App: React.FC = () => {
       const response = await axios.get(url);
       if (response.data.routes && response.data.routes.length > 0) {
         const steps = response.data.routes[0].legs[0].steps;
-        const points: { latitude: number, longitude: number }[] = [];
+        const points: { latitude: number; longitude: number }[] = [];
         steps.forEach((step: any) => {
           const stepPoints = decodePolyline(step.polyline.points);
           points.push(...stepPoints);
@@ -187,7 +200,9 @@ const App: React.FC = () => {
           );
         }
       } else {
-        alert("No routes found. Please check the destination or try again later.");
+        alert(
+          "No routes found. Please check the destination or try again later."
+        );
       }
     } catch (error) {
       console.error("Error fetching directions:", error);
@@ -267,7 +282,7 @@ const App: React.FC = () => {
       )}
     </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {

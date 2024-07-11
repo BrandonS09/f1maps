@@ -6,7 +6,10 @@ interface TravelSelectionProps {
   setWalking: () => void;
 }
 
-const TravelSelection: React.FC<TravelSelectionProps> = ({ setDriving, setWalking }) => {
+const TravelSelection: React.FC<TravelSelectionProps> = ({
+  setDriving,
+  setWalking,
+}) => {
   return (
     <View style={styles.selectionContainer}>
       <Text style={styles.selectionText}>Select Your Way of Travel</Text>
