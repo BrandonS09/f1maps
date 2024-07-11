@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
-import { StyleSheet, View, Text, TextInput, Button, ActivityIndicator, Platform } from "react-native"; // Import Platform here
+import { StyleSheet, View, Text, TextInput, Button, ActivityIndicator, Platform } from "react-native";
 import Map from "./src/Map";
 import DriverSelection from "./src/DriverSelection";
 import TravelSelection from "./src/TravelSelection";
@@ -31,6 +31,7 @@ const App: React.FC = () => {
   const [travelForm, setTravelForm] = useState("walking"); // Default to walking
   const [isTravelSelection, setIsTravelSelection] = useState(false);
   const [selectedDriver, setSelectedDriver] = useState<any>(null);
+  const mapRef = useRef<MapView>(null); // Add ref for MapView
 
   useEffect(() => {
     (async () => {
@@ -98,6 +99,24 @@ const App: React.FC = () => {
       const geocode = await Location.geocodeAsync(destination);
       if (geocode && geocode.length > 0) {
         setDestinationCoords(geocode[0]);
+        if (mapRef.current) {
+          mapRef.current.fitToCoordinates(
+            [
+              {
+                latitude: location.coords.latitude,
+                longitude: location.coords.longitude,
+              },
+              {
+                latitude: geocode[0].latitude,
+                longitude: geocode[0].longitude,
+              },
+            ],
+            {
+              edgePadding: { top: 50, right: 50, bottom: 50, left: 50 },
+              animated: true,
+            }
+          );
+        }
       } else {
         alert("Destination not found");
       }
@@ -148,6 +167,25 @@ const App: React.FC = () => {
         const leg = response.data.routes[0].legs[0];
         setEta(leg.duration.text);
         setDistance(leg.distance.text);
+
+        if (mapRef.current) {
+          mapRef.current.fitToCoordinates(
+            [
+              {
+                latitude: location.coords.latitude,
+                longitude: location.coords.longitude,
+              },
+              {
+                latitude: destinationCoords.latitude,
+                longitude: destinationCoords.longitude,
+              },
+            ],
+            {
+              edgePadding: { top: 50, right: 50, bottom: 50, left: 50 },
+              animated: true,
+            }
+          );
+        }
       } else {
         alert("No routes found. Please check the destination or try again later.");
       }
@@ -191,6 +229,7 @@ const App: React.FC = () => {
           <Button title="Search" onPress={handleSearch} />
 
           <Map
+            mapRef={mapRef} // Pass the ref to the Map component
             location={location}
             destinationCoords={destinationCoords}
             userMarker={userMarker}

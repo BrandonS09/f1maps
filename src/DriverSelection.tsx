@@ -2,7 +2,7 @@ import React from "react";
 import { StyleSheet, View, Text, Image, TouchableOpacity, Button } from "react-native";
 
 interface DriverSelectionProps {
-  drivers: any[];
+  drivers: any;
   handleDriverSelect: (driver: any) => void;
   closeDriverMenu: () => void;
 }
@@ -12,9 +12,14 @@ const DriverSelection: React.FC<DriverSelectionProps> = ({
   handleDriverSelect,
   closeDriverMenu,
 }) => {
+  const driverArray = Object.entries(drivers).map(([name, data]) => ({
+    name,
+    image: data.image,
+  }));
+
   return (
     <View style={styles.driverContainer}>
-      {drivers.map((driver) => (
+      {driverArray.map((driver) => (
         <TouchableOpacity key={driver.name} onPress={() => handleDriverSelect(driver)}>
           <Image source={driver.image} style={styles.driverImage} />
           <Text>{driver.name}</Text>

@@ -1,9 +1,10 @@
-import React, { useRef } from "react";
+import React, { RefObject } from "react";
 import { StyleSheet, View, Text, Image } from "react-native";
 import MapView, { PROVIDER_GOOGLE, Marker, Polyline } from "react-native-maps";
 import f1Flag from "../assets/flag.png";
 
 interface MapProps {
+  mapRef: RefObject<MapView>;
   location: Location.LocationObject | null;
   destinationCoords: Location.LocationObject | null;
   userMarker: Location.LocationObject | null;
@@ -14,6 +15,7 @@ interface MapProps {
 }
 
 const Map: React.FC<MapProps> = ({
+  mapRef,
   location,
   destinationCoords,
   userMarker,
@@ -22,8 +24,6 @@ const Map: React.FC<MapProps> = ({
   uIcon,
   travelForm,
 }) => {
-  const mapRef = useRef<MapView>(null);
-
   return (
     <View style={styles.mapContainer}>
       {location ? (
