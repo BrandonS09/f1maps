@@ -30,8 +30,8 @@
     },
     "extra": {
       "googleMaps": {
-        "iosApiKey": "AIzaSyAgQ0VLGPEYv429mQS-2uxISBdSAIoRuso",
-        "androidApiKey": "AIzaSyBl6IZ6FirpY_bYuhJOWYhrpwniJtsifsg"
+        "iosApiKey": "[INSERT_API_KEY]",
+        "androidApiKey": "[INSERT_API_KEY]"
       },
       "eas": {
         "projectId": "9671e4c4-267b-4544-bc0e-2e3ef483cd12"
