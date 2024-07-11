@@ -323,8 +323,9 @@ export default function App() {
       </View>
       <Modal isVisible={isTravelSelection}>
         <View style={{ flex: 1 }}>
-          <Text>Select Your Way of Travel</Text>
+          <Text style={{color: "white"}}>Select Your Way of Travel</Text>
           <Button title="Driving" onPress={setDriving} />
+          <Text> </Text>
           <Button title="Walking" onPress={setWalking} />
         </View>
       </Modal>
@@ -339,7 +340,7 @@ export default function App() {
               <Text>{driver.name}</Text>
             </TouchableOpacity>
           ))}
-          <Button title="Close" onPress={closeDriverMenu} />
+          <Button title="Close" onPress={closeDriverMenu}/>
         </View>
       )}
     </View>
