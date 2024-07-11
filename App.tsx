@@ -60,7 +60,7 @@ export default function App() {
   const mapRef = useRef<MapView>(null);
   const [uIcon, setUIcon] = useState(nepobaby);
   const [chooseDriverClicked, setChooseDriverClicked] = useState(false);
-  const [travelForm, setTravelForm] = useState('driving');
+  const [travelForm, setTravelForm] = useState("driving");
   const [isTravelSelection, setIsTravelSelection] = React.useState(false);
 
   useEffect(() => {
@@ -95,6 +95,15 @@ export default function App() {
       }
     })();
   }, []);
+
+  useEffect(() => {
+    if (destinationCoords) {
+      const interval = setInterval(() => {
+        handleDirections(travelForm); // Use current travel form
+      }, 10000); // Update every 10 seconds
+      return () => clearInterval(interval);
+    }
+  }, [destinationCoords, location, travelForm]);
 
   const handleSearch = async () => {
     if (destination.trim() === "") {
@@ -132,30 +141,29 @@ export default function App() {
       alert("Error searching for destination");
     }
   };
-  
+
   const setDriving = () => {
     setTravelForm("driving");
-    handleDirections();
-  }
+  };
 
   const setWalking = () => {
     setTravelForm("walking");
-    handleDirections();
-  }
+  };
+
   const showSelectionModal = () => {
     setIsTravelSelection(true);
-  }
+  };
 
-  const handleDirections = async () => {
+  const handleDirections = async (mode) => {
     setIsTravelSelection(false);
-    if (!destinationCoords) {
+    if (!destinationCoords || !location) {
       alert("Please search for a destination first");
       return;
     }
 
     const origin = `${location.coords.latitude},${location.coords.longitude}`;
     const destination = `${destinationCoords.latitude},${destinationCoords.longitude}`;
-    const url = `https://maps.googleapis.com/maps/api/directions/json?origin=${origin}&destination=${destination}&key=${apiKey}&mode=${travelForm}`;
+    const url = `https://maps.googleapis.com/maps/api/directions/json?origin=${origin}&destination=${destination}&key=${apiKey}&mode=${mode}`;
 
     try {
       const response = await axios.get(url);
@@ -246,7 +254,7 @@ export default function App() {
 
   const closeDriverMenu = () => {
     setChooseDriverClicked(false);
-  }
+  };
 
   return (
     <View style={styles.container}>
@@ -334,7 +342,7 @@ export default function App() {
       )}
       <Modal isVisible={isTravelSelection}>
         <View style={{ flex: 1 }}>
-          <Text style={{color: "white"}}>Select Your Way of Travel</Text>
+          <Text style={{ color: "white" }}>Select Your Way of Travel</Text>
           <Button title="Driving" onPress={setDriving} />
           <Text> </Text>
           <Button title="Walking" onPress={setWalking} />
@@ -351,7 +359,7 @@ export default function App() {
               <Text>{driver.name}</Text>
             </TouchableOpacity>
           ))}
-          <Button title="Close" onPress={closeDriverMenu}/>
+          <Button title="Close" onPress={closeDriverMenu} />
         </View>
       )}
     </View>
