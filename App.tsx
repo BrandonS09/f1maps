@@ -57,6 +57,7 @@ export default function App() {
   const mapRef = useRef<MapView>(null);
   const [uIcon, setUIcon] = useState(nepobaby);
   const [chooseDriverClicked, setChooseDriverClicked] = useState(false);
+  const [travelForm, setTravelForm] = useState('driving');
 
   useEffect(() => {
     (async () => {
@@ -127,6 +128,14 @@ export default function App() {
       alert("Error searching for destination");
     }
   };
+  
+  const setDriving = () => {
+    setTravelForm("driving");
+  }
+
+  const setWalking = () => {
+    setTravelForm("walking")
+  }
 
   const handleDirections = async () => {
     if (!destinationCoords) {
@@ -134,9 +143,10 @@ export default function App() {
       return;
     }
 
+
     const origin = `${location.coords.latitude},${location.coords.longitude}`;
     const destination = `${destinationCoords.latitude},${destinationCoords.longitude}`;
-    const url = `https://maps.googleapis.com/maps/api/directions/json?origin=${origin}&destination=${destination}&key=${apiKey}&mode=driving`;
+    const url = `https://maps.googleapis.com/maps/api/directions/json?origin=${origin}&destination=${destination}&key=${apiKey}&mode=${travelForm}`;
 
     try {
       const response = await axios.get(url);
