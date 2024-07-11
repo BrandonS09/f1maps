@@ -44,7 +44,6 @@ const Map: React.FC<MapProps> = ({
       {location ? (
         <MapView
           ref={mapRef}
-          provider={PROVIDER_GOOGLE}
           style={styles.map}
           initialRegion={{
             latitude: location.coords.latitude,
