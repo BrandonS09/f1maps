@@ -9,3 +9,6 @@ while also featuring their cars. Decide between walking or driving to your desti
 - [Expo Locations](https://docs.expo.dev/versions/latest/sdk/location/) to get locations of users
 - [Expo](https://expo.dev/) to package the app
 - Built on [TypeScript](https://www.typescriptlang.org/)
+
+# How it works
+Utilizing React Maps and the native os map application(Apple Maps or Google Maps) to provide accurate location data and live traffic data for optimal routes, the app generates directions to your location, with your location being marked by f1 checkered flags and your icon being your favorite f1 driver or their car, you are now able to explore the world as your favorite drivers
