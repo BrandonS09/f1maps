@@ -34,6 +34,16 @@ import ham from "./assets/ham.png";
 import checo from "./assets/checo.png";
 import alonso from "./assets/alonso.png";
 import alex from "./assets/alex.png";
+import rb from "./assets/rb.png";
+import redbull from "./assets/redbull.png";
+import mclaren from "./assets/mclaren.png";
+import am from "./assets/am.png";
+import mercedes from "./assets/mercedes.png"
+import haas from "./assets/haas.png";
+import alpine from "./assets/alpine.png"
+import ferrari from "./assets/ferrari.png"
+import williams from "./assets/willaims.png"
+import sauber from "./assets/sauber.png"
 
 import f1Flag from "./assets/flag.png";
 
