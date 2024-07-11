@@ -8,6 +8,7 @@ import {
   Button,
   TouchableOpacity,
   Platform,
+  ActivityIndicator,
 } from "react-native";
 import MapView, { PROVIDER_GOOGLE, Marker, Polyline } from "react-native-maps";
 import * as Location from "expo-location";
@@ -67,6 +68,7 @@ export default function App() {
   const [routeCoordinates, setRouteCoordinates] = useState([]);
   const [eta, setEta] = useState<string | null>(null);
   const [distance, setDistance] = useState<string | null>(null);
+  const [directionsLoading, setDirectionsLoading] = useState<boolean>(false);
   const mapRef = useRef<MapView>(null);
   const [uIcon, setUIcon] = useState(nepobaby); // Default to driver's face
   const [chooseDriverClicked, setChooseDriverClicked] = useState(false);
@@ -98,9 +100,11 @@ export default function App() {
 
   useEffect(() => {
     (async () => {
+      setDirectionsLoading(true);
       let { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== "granted") {
         console.log("Permission to access location was denied");
+        setDirectionsLoading(false);
         return;
       }
 
@@ -125,6 +129,8 @@ export default function App() {
         });
       } catch (error) {
         console.error("Error fetching location:", error);
+      } finally {
+        setDirectionsLoading(false);
       }
     })();
   }, []);
@@ -132,7 +138,7 @@ export default function App() {
   useEffect(() => {
     if (destinationCoords) {
       const interval = setInterval(() => {
-        handleDirections(travelForm); // Use current travel form
+        handleDirections(travelForm, false); // Use current travel form, no loading for updates
       }, 10000); // Update every 10 seconds
       return () => clearInterval(interval);
     }
@@ -187,22 +193,26 @@ export default function App() {
 
   const setDriving = () => {
     setTravelForm("driving");
+    handleDirections("driving", true);
   };
 
   const setWalking = () => {
     setTravelForm("walking");
+    handleDirections("walking", true);
   };
 
   const showSelectionModal = () => {
     setIsTravelSelection(true);
   };
 
-  const handleDirections = async (mode) => {
+  const handleDirections = async (mode, showLoading = false) => {
     setIsTravelSelection(false);
     if (!destinationCoords || !location) {
       alert("Please search for a destination first");
       return;
     }
+
+    if (showLoading) setDirectionsLoading(true);
 
     const origin = `${location.coords.latitude},${location.coords.longitude}`;
     const destination = `${destinationCoords.latitude},${destinationCoords.longitude}`;
@@ -223,6 +233,25 @@ export default function App() {
         const leg = response.data.routes[0].legs[0];
         setEta(leg.duration.text);
         setDistance(leg.distance.text);
+
+        if (mapRef.current) {
+          mapRef.current.fitToCoordinates(
+            [
+              {
+                latitude: location.coords.latitude,
+                longitude: location.coords.longitude,
+              },
+              {
+                latitude: destinationCoords.latitude,
+                longitude: destinationCoords.longitude,
+              },
+            ],
+            {
+              edgePadding: { top: 50, right: 50, bottom: 50, left: 50 },
+              animated: true,
+            }
+          );
+        }
       } else {
         console.error("No routes found in the API response.");
         alert(
@@ -231,6 +260,8 @@ export default function App() {
       }
     } catch (error) {
       console.error("Error fetching directions:", error);
+    } finally {
+      if (showLoading) setDirectionsLoading(false);
     }
   };
 
@@ -302,112 +333,122 @@ export default function App() {
 
   return (
     <View style={styles.container}>
-      <TextInput
-        style={styles.input}
-        placeholder="Enter destination"
-        value={destination}
-        onChangeText={(text) => setDestination(text)}
-      />
-      <Button title="Search" onPress={handleSearch} />
-
-      <View style={styles.mapContainer}>
-        {location ? (
-          <MapView
-            ref={mapRef}
-            provider={PROVIDER_GOOGLE}
-            style={styles.map}
-            initialRegion={{
-              latitude: location.coords.latitude,
-              longitude: location.coords.longitude,
-              latitudeDelta: 0.01,
-              longitudeDelta: 0.01,
-            }}
-          >
-            {destinationCoords && (
-              <Marker
-                coordinate={{
-                  latitude: destinationCoords.latitude,
-                  longitude: destinationCoords.longitude,
-                }}
-                title="Destination"
-                description={destination}
-              >
-                <Image
-                  source={f1Flag}
-                  style={{ width: 50, height: 50 }}
-                  resizeMode="contain"
-                />
-              </Marker>
-            )}
-
-            {userMarker && (
-              <Marker
-                coordinate={{
-                  latitude: userMarker.coords.latitude,
-                  longitude: userMarker.coords.longitude,
-                }}
-                title="My Location"
-                description="Current Location"
-                rotation={heading || 0}
-              >
-                <Image
-                  source={uIcon}
-                  style={{
-                    width: travelForm === "driving" ? 70 : 50,
-                    height: travelForm === "driving" ? 50 : 50,
-                  }}
-                  resizeMode="contain"
-                />
-              </Marker>
-            )}
-
-            {routeCoordinates.length > 0 && (
-              <Polyline
-                coordinates={routeCoordinates}
-                strokeWidth={4}
-                strokeColor="blue"
-              />
-            )}
-          </MapView>
-        ) : (
-          <Text>Loading...</Text>
-        )}
-      </View>
-      <View style={styles.buttonContainer}>
-        <Button
-          title="Get Directions"
-          onPress={showSelectionModal}
-          disabled={!destinationCoords}
-        />
-        <Button title="Choose Driver" onPress={chooseDriver} />
-      </View>
-      {eta && distance && (
-        <View style={styles.infoContainer}>
-          <Text>ETA: {eta}</Text>
-          <Text>Distance: {distance}</Text>
+      {directionsLoading && (
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color="#0000ff" />
+          <Text>Loading directions...</Text>
         </View>
       )}
-      <Modal isVisible={isTravelSelection}>
-        <View style={{ flex: 1 }}>
-          <Text style={{ color: "white" }}>Select Your Way of Travel</Text>
-          <Button title="Driving" onPress={setDriving} />
-          <Text> </Text>
-          <Button title="Walking" onPress={setWalking} />
-        </View>
-      </Modal>
-      {chooseDriverClicked && (
-        <View style={styles.driverContainer}>
-          {drivers.map((driver) => (
-            <TouchableOpacity
-              key={driver.name}
-              onPress={() => handleDriverSelect(driver)}
-            >
-              <Image source={driver.image} style={styles.driverImage} />
-              <Text>{driver.name}</Text>
-            </TouchableOpacity>
-          ))}
-          <Button title="Close" onPress={closeDriverMenu} />
-        </View>
+      {!directionsLoading && (
+        <>
+          <TextInput
+            style={styles.input}
+            placeholder="Enter destination"
+            value={destination}
+            onChangeText={(text) => setDestination(text)}
+          />
+          <Button title="Search" onPress={handleSearch} />
+
+          <View style={styles.mapContainer}>
+            {location ? (
+              <MapView
+                ref={mapRef}
+                provider={PROVIDER_GOOGLE}
+                style={styles.map}
+                initialRegion={{
+                  latitude: location.coords.latitude,
+                  longitude: location.coords.longitude,
+                  latitudeDelta: 0.01,
+                  longitudeDelta: 0.01,
+                }}
+              >
+                {destinationCoords && (
+                  <Marker
+                    coordinate={{
+                      latitude: destinationCoords.latitude,
+                      longitude: destinationCoords.longitude,
+                    }}
+                    title="Destination"
+                    description={destination}
+                  >
+                    <Image
+                      source={f1Flag}
+                      style={{ width: 50, height: 50 }}
+                      resizeMode="contain"
+                    />
+                  </Marker>
+                )}
+
+                {userMarker && (
+                  <Marker
+                    coordinate={{
+                      latitude: userMarker.coords.latitude,
+                      longitude: userMarker.coords.longitude,
+                    }}
+                    title="My Location"
+                    description="Current Location"
+                    rotation={heading || 0}
+                  >
+                    <Image
+                      source={uIcon}
+                      style={{
+                        width: travelForm === "driving" ? 70 : 50,
+                        height: travelForm === "driving" ? 70 : 50,
+                      }}
+                      resizeMode="contain"
+                    />
+                  </Marker>
+                )}
+
+                {routeCoordinates.length > 0 && (
+                  <Polyline
+                    coordinates={routeCoordinates}
+                    strokeWidth={4}
+                    strokeColor="blue"
+                  />
+                )}
+              </MapView>
+            ) : (
+              <Text>Loading...</Text>
+            )}
+          </View>
+          <View style={styles.buttonContainer}>
+            <Button
+              title="Get Directions"
+              onPress={showSelectionModal}
+              disabled={!destinationCoords}
+            />
+            <Button title="Choose Driver" onPress={chooseDriver} />
+          </View>
+          {eta && distance && (
+            <View style={styles.infoContainer}>
+              <Text>ETA: {eta}</Text>
+              <Text>Distance: {distance}</Text>
+            </View>
+          )}
+          <Modal isVisible={isTravelSelection}>
+            <View style={{ flex: 1 }}>
+              <Text style={{ color: "white" }}>Select Your Way of Travel</Text>
+              <Button title="Driving" onPress={setDriving} />
+              <Text> </Text>
+              <Button title="Walking" onPress={setWalking} />
+            </View>
+          </Modal>
+          {chooseDriverClicked && (
+            <View style={styles.driverContainer}>
+              {drivers.map((driver) => (
+                <TouchableOpacity
+                  key={driver.name}
+                  onPress={() => handleDriverSelect(driver)}
+                >
+                  <Image source={driver.image} style={styles.driverImage} />
+                  <Text>{driver.name}</Text>
+                </TouchableOpacity>
+              ))}
+              <Button title="Close" onPress={closeDriverMenu} />
+            </View>
+          )}
+        </>
       )}
     </View>
   );
@@ -419,6 +460,11 @@ const styles = StyleSheet.create({
     justifyContent: "flex-start",
     alignItems: "center",
     paddingTop: 50,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
   },
   input: {
     width: "80%",
