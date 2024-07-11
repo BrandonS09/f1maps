@@ -55,6 +55,8 @@ export default function App() {
     null
   );
   const [routeCoordinates, setRouteCoordinates] = useState([]);
+  const [eta, setEta] = useState<string | null>(null);
+  const [distance, setDistance] = useState<string | null>(null);
   const mapRef = useRef<MapView>(null);
   const [uIcon, setUIcon] = useState(nepobaby);
   const [chooseDriverClicked, setChooseDriverClicked] = useState(false);
@@ -76,12 +78,15 @@ export default function App() {
         Location.watchPositionAsync(
           {
             accuracy: Location.Accuracy.BestForNavigation,
-            timeInterval: 1000, // Update location every second
-            distanceInterval: 1, // Minimum distance (in meters) to trigger an update
+            timeInterval: 1000,
+            distanceInterval: 1,
           },
           (locationData) => {
             setLocation(locationData);
             setUserMarker(locationData);
+            if (destinationCoords) {
+              handleDirections();
+            }
           }
         );
 
@@ -92,7 +97,7 @@ export default function App() {
         console.error("Error fetching location:", error);
       }
     })();
-  }, []);
+  }, [destinationCoords]);
 
   const handleSearch = async () => {
     if (destination.trim() === "") {
@@ -157,7 +162,7 @@ export default function App() {
 
     try {
       const response = await axios.get(url);
-      console.log("API Response:", response.data); // Log the entire response
+      console.log("API Response:", response.data);
       if (response.data.routes && response.data.routes.length > 0) {
         const steps = response.data.routes[0].legs[0].steps;
         const points = [];
@@ -166,6 +171,10 @@ export default function App() {
           points.push(...stepPoints);
         });
         setRouteCoordinates(points);
+
+        const leg = response.data.routes[0].legs[0];
+        setEta(leg.duration.text);
+        setDistance(leg.distance.text);
       } else {
         console.error("No routes found in the API response.");
         alert(
@@ -177,7 +186,6 @@ export default function App() {
     }
   };
 
-  // Function to decode polyline points
   const decode = (t, e = 5) => {
     let points = [];
     let lat = 0,
@@ -321,6 +329,12 @@ export default function App() {
         />
         <Button title="Choose Driver" onPress={chooseDriver} />
       </View>
+      {eta && distance && (
+        <View style={styles.infoContainer}>
+          <Text>ETA: {eta}</Text>
+          <Text>Distance: {distance}</Text>
+        </View>
+      )}
       <Modal isVisible={isTravelSelection}>
         <View style={{ flex: 1 }}>
           <Text style={{color: "white"}}>Select Your Way of Travel</Text>
@@ -389,5 +403,8 @@ const styles = StyleSheet.create({
     width: 50,
     height: 50,
     margin: 10,
+  },
+  infoContainer: {
+    marginTop: 10,
   },
 });
