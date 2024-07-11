@@ -84,9 +84,6 @@ export default function App() {
           (locationData) => {
             setLocation(locationData);
             setUserMarker(locationData);
-            if (destinationCoords) {
-              handleDirections();
-            }
           }
         );
 
@@ -97,7 +94,7 @@ export default function App() {
         console.error("Error fetching location:", error);
       }
     })();
-  }, [destinationCoords]);
+  }, []);
 
   const handleSearch = async () => {
     if (destination.trim() === "") {
