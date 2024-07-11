@@ -10,7 +10,6 @@ import Modal from "react-native-modal";
 import nepobaby from "./assets/stroll.png";
 import drivers from "./src/drivers";
 import { decodePolyline } from "./src/utils";
-import MapView from "react-native-maps";
 
 const apiKey = Platform.select({
   ios: Constants.expoConfig.extra.googleMaps.iosApiKey,
@@ -104,8 +103,8 @@ const App: React.FC = () => {
           mapRef.current.fitToCoordinates(
             [
               {
-                latitude: location.coords.latitude,
-                longitude: location.coords.longitude,
+                latitude: location?.coords.latitude,
+                longitude: location?.coords.longitude,
               },
               {
                 latitude: geocode[0].latitude,
