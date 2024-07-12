@@ -1,5 +1,5 @@
 # F1 Maps
-F1 maps is a cross-platform mobile application that is like google maps or apple maps but f1 themed. Featuring a cast of f1 drivers including fan-favorites like Max Verstappen and Lando Norris
+F1 Maps is a cross-platform mobile application that is like Google Maps or Apple Maps but F1-themed. Featuring a cast of F1 drivers including fan-favorites like Max Verstappen and Lando Norris
 while also featuring their cars. Decide between walking or driving to your destination to either be represented by a bobblehead of your beloved drivers, or their cars which win grand prix's etc.
 
 # Frameworks Used
@@ -12,3 +12,9 @@ while also featuring their cars. Decide between walking or driving to your desti
 
 # How it works
 Utilizing React Maps and the native os map application(Apple Maps or Google Maps) to provide accurate location data and live traffic data for optimal routes, the app generates directions to your location, with your location being marked by f1 checkered flags and your icon being your favorite f1 driver or their car, you are now able to explore the world as your favorite drivers
+
+# How to run and test locally
+Upon cloning the project and inputting your own API keys in app.json type ```npm install``` to install all necessary packages, then run ```npx expo start``` to run locally
+
+# Will this ever be on the app store?
+Currently, the future of this project and its downloadability is sketchy but this will most likely make the Google Play Store, in terms of IOS Store, due to not owning a MacBook, it is not possible in the near future
