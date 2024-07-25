@@ -13,7 +13,7 @@ while also featuring their cars. Decide between walking or driving to your desti
 # How it works
 Utilizing React Maps and the native os map application(Apple Maps or Google Maps) to provide accurate location data and live traffic data for optimal routes, the app generates directions to your location, with your location being marked by f1 checkered flags and your icon being your favorite f1 driver or their car, you are now able to explore the world as your favorite drivers
 
-#Demo
+# Demo
 
 https://github.com/user-attachments/assets/2e8ffa60-1516-4127-bccd-51debaa02e84
 
